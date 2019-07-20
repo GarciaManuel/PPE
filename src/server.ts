@@ -6,10 +6,9 @@ import { ApolloServer } from 'apollo-server-express';
 import { createServer } from 'http';
 import environments from './config/environments';
 import Database from './config/database';
-import expressPlayground from 'graphql-playground-middleware-express';
 if (process.env.NODE_ENV !== 'production') {
     const envs = environments;
-    console.log(envs);
+    // console.log(envs);
 }
 
 async function init() {
@@ -34,15 +33,11 @@ async function init() {
 
     server.applyMiddleware({ app });
 
-    app.use('/', expressPlayground ({
-        endpoint: '/graphql'
-    }));
-
     const PORT = process.env.PORT || 5300;
     const httpServer = createServer(app);
     httpServer.listen(
         { port: PORT },
-        () => console.log(`Hola Mundo API GraphQL http://localhost:${PORT}/graphql`)
+        () => console.log(`Sistema de Autenticación JWT API GraphQL http://localhost:${PORT}/graphql`)
     );
 }
 
