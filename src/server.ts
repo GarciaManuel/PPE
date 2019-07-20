@@ -33,12 +33,8 @@ async function init() {
         introspection: true
     });
 
-    app.use('/', expressPlayground({
-        endpoint: '/graphql'
-    }))
-
     server.applyMiddleware({ app });
-
+    
     const PORT = process.env.PORT || 5300;
     const httpServer = createServer(app);
     httpServer.listen(
