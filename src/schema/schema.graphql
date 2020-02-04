@@ -17,9 +17,18 @@ type User {
     name: String!
     lastname: String!
     email: String!
-    password: String
+    password: String!
     registerDate: String!
 }
+
+type Meeting{
+    id: ID!
+    pacient: String!
+    anomaly: Boolean!
+    podiatrist: String!
+    meetingDate: Date!
+}
+
 
 input UserInput {
     name: String!
