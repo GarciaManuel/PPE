@@ -1,3 +1,6 @@
+scalar Date
+scalar DateTime
+
  type Query {
     "Obtenemos las lista de todos los usuarios"
     users: [User!]!
@@ -26,7 +29,7 @@ type Meeting{
     pacient: String!
     anomaly: Boolean!
     podiatrist: String!
-    meetingDate: Date!
+    meetingDate: String!
 }
 
 
