@@ -1,6 +1,7 @@
 import { IResolvers } from "graphql-tools";
 import { Datetime } from "../lib/datetime";
 import bcryptjs from 'bcryptjs';
+import JWT from "../lib/jwt";
 const mutation: IResolvers = {
     Mutation: {
         async register(_: void, { user }, { db }): Promise<any> {
@@ -38,6 +39,36 @@ const mutation: IResolvers = {
                         user: null
                     };
                 });
+        },
+        async deleteUser(_: void, {userId}, { db, token}): Promise<any>{
+
+            let info: any = new JWT().verify(token);
+            if (info === 'La autenticación del token es inválida. Por favor, inicia sesión para obtener un nuevo token') {
+                return {
+                    status: false,
+                    message: info,
+                    user: null
+                }
+            }
+            return await db.collection('users').deleteOne({id:userId})
+            .then((result: any) => {
+                console.log(result.result);
+                let done = result.result.n && result.result.ok;
+                let deleted = ""
+                if(!done) deleted="NO"
+                return {
+                    status: done,
+                    message: `Usuario ${deleted} eliminado correctamente`,
+                };
+            })
+            .catch((err: any) => {
+                console.log(err);
+                return {
+                    status: false,
+                    message: `Error en la eliminación de Usuario`,
+                };
+            });
+                
         }
     }
 }

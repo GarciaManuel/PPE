@@ -13,6 +13,7 @@ scalar DateTime
 type Mutation {
     "Registro de los usuarios en el sistema"
     register(user: UserInput): ResultUser!
+    deleteUser(userId: Int!): ResultOperation!
 }
 
 type User {
@@ -21,6 +22,7 @@ type User {
     lastname: String!
     email: String!
     password: String!
+    podiatrist: Boolean
     registerDate: String!
 }
 
@@ -38,6 +40,13 @@ input UserInput {
     lastname: String!
     email: String!
     password: String!
+    podiatrist: Boolean
+
+}
+
+type ResultOperation {
+    status: Boolean!
+    message: String!
 }
 
 type ResultUser {
