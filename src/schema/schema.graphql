@@ -1,3 +1,5 @@
+scalar Upload
+
 type Query {
   "Obtenemos las lista de todos los usuarios"
   users: [User!]!
@@ -13,6 +15,7 @@ type Mutation {
   "Registro de los usuarios en el sistema"
   register(user: UserInput): ResultGeneral!
   deleteUser(userId: Int!): ResultGeneral!
+  uploadCSV(csvFile: Upload): ResultGeneral!
   ##addMeasure(measure: MeasureInput): ResultGeneral!
   ##deleteMeasure(measureId: String): ResultGeneral!
 }
@@ -63,9 +66,9 @@ input UserInput {
 }
 
 input SensorInput {
-  number: Int!
-  posX: Float!
-  posY: Float!
+  number: Int
+  posX: Float
+  posY: Float
   averagePressureS: Float!
   minPressureS: Float!
   maxPressureS: Float!

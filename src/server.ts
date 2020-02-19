@@ -7,6 +7,8 @@ import { createServer } from 'http';
 import environments from './config/environments';
 import Database from './config/database';
 import expressPlayground from 'graphql-playground-middleware-express';
+import { graphqlUploadExpress } from 'graphql-upload'
+
 
 if (process.env.NODE_ENV !== 'production') {
     const envs = environments;
@@ -14,7 +16,9 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 async function init() {
-    const app = express();
+    const app = express().use(
+        graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 })
+    );
 
     app.use('*', cors());
 
@@ -30,7 +34,8 @@ async function init() {
     const server = new ApolloServer({
         schema,
         context,
-        introspection: true
+        introspection: true,
+        uploads: false
     });
 
     server.applyMiddleware({ app });
