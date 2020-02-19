@@ -3,9 +3,8 @@ import { Datetime } from "../lib/datetime";
 import bcryptjs from 'bcryptjs';
 import JWT from "../lib/jwt";
 const mutation: IResolvers = {
-    Mutation: {
-        async register(_: void, { user }, { db }): Promise<any> {
-
+  Mutation: {
+    async register(_: void, { user }, { db }): Promise<any> {
             const userCheck = await db.collection('users').findOne({ email: user.email });
 
             if (userCheck !== null) {
@@ -70,7 +69,58 @@ const mutation: IResolvers = {
             });
                 
         }
-    }
-}
+    // async addMeasure(_: void, { measure }, { db }): Promise<any> {
+    //   console.log(measure);
+    //   measure.date = new Datetime().getCurrentDateTime();
+    //   return await db
+    //     .collection("measures")
+    //     .insertOne(measure)
+    //     .then((result: any) => {
+    //       return {
+    //         status: true,
+    //         message: `Successful addition to measures.`,
+    //         measure
+    //       };
+    //     })
+    //     .catch((err: any) => {
+    //       return {
+    //         status: false,
+    //         message: `Failed addition to measures.`,
+    //         measure: null
+    //       };
+    //     });
+    // },
+    // async deleteMeasure(_: void, { measureId }, { db, token }): Promise<any> {
+    //   let info: any = new JWT().verify(token);
+    //   if (info === "Invalid token. You need to log in first.") {
+    //     return {
+    //       status: false,
+    //       message: info,
+    //       user: null
+    //     };
+    //   }
+    //   return await db
+    //     .collection("measures")
+    //     .deleteOne({ id: measureId })
+    //     .then((result: any) => {
+    //       console.log(result.result);
+    //       let done = result.result.n && result.result.ok;
+    //       let deleted = "";
+    //       if (!done) deleted = "NO";
+    //       return {
+    //         status: done,
+    //         message: `Measure ${deleted} successfully deleted.`
+    //       };
+    //     })
+    //     .catch((err: any) => {
+    //       console.log(err);
+    //       return {
+    //         status: false,
+    //         message: `Failed attempt to delete measure.`
+    //       };
+    //     });
+    // }
+  }
+};
 
 export default mutation;
