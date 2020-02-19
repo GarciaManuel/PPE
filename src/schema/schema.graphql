@@ -1,41 +1,73 @@
- type Query {
-    "Obtenemos las lista de todos los usuarios"
-    users: [User!]!
-    "Iniciamos sesión en el sistema"
-    login(email: String!, password: String!): ResultToken!
-    "Obtener nuestra información con el token"
-    me: ResultUser!
+type Query {
+  "Obtenemos las lista de todos los usuarios"
+  users: [User!]!
+  "Iniciamos sesión en el sistema"
+  login(email: String!, password: String!): ResultGeneral!
+  "Obtener nuestra información con el token"
+  me: ResultGeneral!
+  "Obtain patient's measures"
+  getMeasures(patient: String!): [Measure!]!
 }
 
 type Mutation {
-    "Registro de los usuarios en el sistema"
-    register(user: UserInput): ResultUser!
+  "Registro de los usuarios en el sistema"
+  register(user: UserInput): ResultGeneral!
+  addMeasure(measure: MeasureInput): ResultGeneral!
 }
 
 type User {
-    id: ID!
-    name: String!
-    lastname: String!
-    email: String!
-    password: String
-    registerDate: String!
+  id: ID!
+  name: String!
+  lastName: String!
+  email: String!
+  password: String
+  registerDate: String!
+}
+
+type Sensor {
+  number: Int!
+  posX: Float!
+  posY: Float!
+  averagePressureS: Float!
+  minPressureS: Float!
+  maxPressureS: Float!
+}
+
+type Measure {
+  patientId: String!
+  date: String!
+  duration: String
+  csv: String
+  sensors: [Sensor]!
 }
 
 input UserInput {
-    name: String!
-    lastname: String!
-    email: String!
-    password: String!
+  name: String!
+  lastName: String!
+  email: String!
+  password: String!
 }
 
-type ResultUser {
-    status: Boolean!
-    message: String!
-    user: User
+input MeasureInput {
+  patientId: String!
+  duration: String
+  csv: String
+  sensors: [Sensor]!
 }
 
-type ResultToken {
-    status: Boolean!
-    message: String!
-    token: String
+type ResultGeneral {
+  status: Boolean!
+  message: String!
+}
+
+extend type ResultGeneral {
+  measure: Measure
+}
+
+extend type ResultGeneral {
+  user: User
+}
+
+extend type ResultGeneral {
+  token: String
 }
