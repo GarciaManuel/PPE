@@ -12,7 +12,7 @@ const mutation: IResolvers = {
       if (userCheck !== null) {
         return {
           status: false,
-          message: `Usuario NO registrado porque ya existe el usuario ${user.email}`,
+          message: `User NOT registered, the user already exists ${user.email}`,
           user: null
         };
       }
@@ -35,24 +35,21 @@ const mutation: IResolvers = {
         .then((result: any) => {
           return {
             status: true,
-            message: `Usuario ${user.name} ${user.lastname} añadido correctamente`,
+            message: `User ${user.name} ${user.lastname} added correctly`,
             user
           };
         })
         .catch((err: any) => {
           return {
             status: false,
-            message: `Usuario NO añadido correctamente`,
+            message: `User NOT added correctly`,
             user: null
           };
         });
     },
     async deleteUser(_: void, { userId }, { db, token }): Promise<any> {
       let info: any = new JWT().verify(token);
-      if (
-        info ===
-        "La autenticación del token es inválida. Por favor, inicia sesión para obtener un nuevo token"
-      ) {
+      if (info === "Invalid token. Log in again.") {
         return {
           status: false,
           message: info,
@@ -69,14 +66,14 @@ const mutation: IResolvers = {
           if (!done) deleted = "NO";
           return {
             status: done,
-            message: `Usuario ${deleted} eliminado correctamente`
+            message: `User ${deleted} deleted correctly`
           };
         })
         .catch((err: any) => {
           console.log(err);
           return {
             status: false,
-            message: `Error en la eliminación de Usuario`
+            message: `Deleting user failed`
           };
         });
     },
@@ -98,6 +95,65 @@ const mutation: IResolvers = {
             status: false,
             message: `Failed addition to measures.`,
             measure: null
+          };
+        });
+    },
+
+    async uploadCSV(_: void, { csvFile }, { db, token }): Promise<any> {
+      const path = require("path");
+      const { createWriteStream } = require("fs");
+
+      let info: any = new JWT().verify(token);
+      if (info === "Invalid token. Log in again.") {
+        return {
+          status: false,
+          message: info
+        };
+      }
+
+      const { createReadStream, filename, mimetype, encoding } = await csvFile;
+      console.log(mimetype);
+      if (mimetype !== "text/csv") {
+        return {
+          status: false,
+          message: "File type not accepted, only .csv"
+        };
+      }
+      const newPath = path.join(
+        __dirname,
+        `../../uploads/${info.user.id}`,
+        `${info.user.email}_${new Datetime().getCurrentDateTime()}_${filename}`
+      );
+      const stream = createReadStream();
+
+      if (
+        !(await new Promise((resolve, reject) =>
+          stream
+            .pipe(createWriteStream(newPath))
+            .on("error", (error: any) => reject(error))
+            .on("finish", () => resolve({ newPath }))
+        ))
+      ) {
+        return {
+          status: false,
+          message: "Failed to create stream to store the csv"
+        };
+      }
+
+      return await db
+        .collection("files")
+        .insertOne({ name: filename })
+        .then((result: any) => {
+          return {
+            status: true,
+            message: `File uploaded succesfully`
+          };
+        })
+        .catch((err: any) => {
+          console.log(err);
+          return {
+            status: false,
+            message: `Failed to store correctly the csv`
           };
         });
     }
