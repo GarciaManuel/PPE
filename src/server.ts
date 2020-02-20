@@ -48,7 +48,7 @@ async function init() {
     const httpServer = createServer(app);
     httpServer.listen(
         { port: PORT },
-        () => console.log(`Sistema de Autenticación JWT API GraphQL http://localhost:${PORT}/graphql`)
+        () => console.log(`Authentication systems JWT API GraphQL http://localhost:${PORT}/graphql`)
     );
 }
 

@@ -1,18 +1,18 @@
 scalar Upload
 
 type Query {
-  "Obtenemos las lista de todos los usuarios"
+  "List of all users"
   users: [User!]!
-  "Iniciamos sesión en el sistema"
+  "Log in to the system"
   login(email: String!, password: String!): ResultGeneral!
-  "Obtener nuestra información con el token"
+  "Get user information with the token"
   me: ResultGeneral!
   "Obtain patient's measures"
   getMeasures(patient: String!): [Measure!]!
 }
 
 type Mutation {
-  "Registro de los usuarios en el sistema"
+  "Users registration"
   register(user: UserInput): ResultGeneral!
   deleteUser(userId: Int!): ResultGeneral!
   uploadCSV(csvFile: Upload): ResultGeneral!

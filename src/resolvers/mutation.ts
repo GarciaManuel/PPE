@@ -12,7 +12,7 @@ const mutation: IResolvers = {
       if (userCheck !== null) {
         return {
           status: false,
-          message: `Usuario NO registrado porque ya existe el usuario ${user.email}`,
+          message: `User NOT registered, the user already exists ${user.email}`,
           user: null
         };
       }
@@ -35,14 +35,14 @@ const mutation: IResolvers = {
         .then((result: any) => {
           return {
             status: true,
-            message: `Usuario ${user.name} ${user.lastname} añadido correctamente`,
+            message: `User ${user.name} ${user.lastname} added correctly`,
             user
           };
         })
         .catch((err: any) => {
           return {
             status: false,
-            message: `Usuario NO añadido correctamente`,
+            message: `User NOT added correctly`,
             user: null
           };
         });
@@ -50,8 +50,7 @@ const mutation: IResolvers = {
     async deleteUser(_: void, { userId }, { db, token }): Promise<any> {
       let info: any = new JWT().verify(token);
       if (
-        info ===
-        "La autenticación del token es inválida. Por favor, inicia sesión para obtener un nuevo token"
+        info === "Invalid token. Log in again."
       ) {
         return {
           status: false,
@@ -69,14 +68,14 @@ const mutation: IResolvers = {
           if (!done) deleted = "NO";
           return {
             status: done,
-            message: `Usuario ${deleted} eliminado correctamente`
+            message: `User ${deleted} deleted correctly`
           };
         })
         .catch((err: any) => {
           console.log(err);
           return {
             status: false,
-            message: `Error en la eliminación de Usuario`
+            message: `Deleting user failed`
           };
         });
     },
@@ -86,8 +85,7 @@ const mutation: IResolvers = {
 
       let info: any = new JWT().verify(token);
       if (
-        info ===
-        "La autenticación del token es inválida. Por favor, inicia sesión para obtener un nuevo token"
+        info ==="Invalid token. Log in again."
       ) {
         return {
           status: false,
@@ -100,10 +98,10 @@ const mutation: IResolvers = {
       if(mimetype!=="text/csv"){
         return {
           status: false,
-          message: "El tipo de archivo no es aceptado, solo csv",
+          message: "File type not accepted, only .csv",
         };
       }
-      const newPath = path.join(__dirname, "../../uploads/images", `${info.user.id}_${info.user.email}_${new Datetime().getCurrentDateTime()}_${filename}`);
+      const newPath = path.join(__dirname, `../../uploads/${info.user.id}`, `${info.user.email}_${new Datetime().getCurrentDateTime()}_${filename}`);
       const stream = createReadStream();
 
       if (
@@ -116,7 +114,7 @@ const mutation: IResolvers = {
       ) {
         return {
           status: false,
-          message: "Hubo un problema al guardar el archivo",
+          message: "Failed to create stream to store the csv",
         };
       }
 
@@ -126,14 +124,14 @@ const mutation: IResolvers = {
         .then((result: any) => {
           return {
             status: true,
-            message: `Se ha subido correctamente el archivo`
+            message: `File uploaded succesfully`
           };
         })
         .catch((err: any) => {
           console.log(err);
           return {
             status: false,
-            message: `Error en la subida del archivo`
+            message: `Failed to store correctly the csv`
           };
         });
     }

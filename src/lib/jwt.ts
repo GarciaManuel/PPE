@@ -11,7 +11,7 @@ class JWT {
         try {
             return jwt.verify(token, this.secretKey) as string;
         } catch (e) {
-            return 'La autenticación del token es inválida. Por favor, inicia sesión para obtener un nuevo token';
+            return 'Invalid token. Log in again.';
         }
     }
 }
