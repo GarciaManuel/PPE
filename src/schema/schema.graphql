@@ -13,18 +13,18 @@ type Mutation {
   "Registro de los usuarios en el sistema"
   register(user: UserInput): ResultGeneral!
   deleteUser(userId: Int!): ResultGeneral!
-  ##addMeasure(measure: MeasureInput): ResultGeneral!
+  addMeasure(measure: MeasureInput): ResultGeneral!
   ##deleteMeasure(measureId: String): ResultGeneral!
 }
 
 type User {
   id: ID!
-    name: String!
-    lastname: String!
-    email: String!
-    password: String!
-    podiatrist: Boolean
-    registerDate: String!
+  name: String!
+  lastname: String!
+  email: String!
+  password: String!
+  podiatrist: Boolean
+  registerDate: String!
 }
 
 type Sensor {
@@ -44,22 +44,20 @@ type Measure {
   sensors: [Sensor]!
 }
 
-type Meeting{
-    id: ID!
-    pacient: String!
-    anomaly: Boolean!
-    podiatrist: String!
-    meetingDate: String!
+type Meeting {
+  id: ID!
+  pacient: String!
+  anomaly: Boolean!
+  podiatrist: String!
+  meetingDate: String!
 }
 
-
 input UserInput {
-    name: String!
-    lastname: String!
-    email: String!
-    password: String!
-    podiatrist: Boolean
-
+  name: String!
+  lastname: String!
+  email: String!
+  password: String!
+  podiatrist: Boolean
 }
 
 input SensorInput {
@@ -78,7 +76,6 @@ input MeasureInput {
   sensors: [SensorInput]!
 }
 
-
 type ResultGeneral {
   status: Boolean!
   message: String!
@@ -96,8 +93,8 @@ extend type ResultGeneral {
   token: String
 }
 extend type ResultGeneral {
-    name: String!
-    lastName: String!
-    email: String!
-    password: String!
+  name: String!
+  lastName: String!
+  email: String!
+  password: String!
 }

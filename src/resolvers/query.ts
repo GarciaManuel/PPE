@@ -15,7 +15,7 @@ const query: IResolvers = {
       if (user === null) {
         return {
           status: false,
-          message: "Login INCORRECTO. No existe el usuario",
+          message: "FAILED to log in. User not found.",
           token: null
         };
       }
@@ -23,23 +23,20 @@ const query: IResolvers = {
       if (!bcryptjs.compareSync(password, user.password)) {
         return {
           status: false,
-          message: "Login INCORRECTO. Contraseña incorrecta",
+          message: "FAILED to log in. Incorrect password.",
           token: null
         };
       }
       delete user.password;
       return {
         status: true,
-        message: "Login Correcto",
+        message: "Correct token.",
         token: new JWT().sign({ user })
       };
     },
     me(_: void, __: any, { token }) {
       let info: any = new JWT().verify(token);
-      if (
-        info ===
-        "La autenticación del token es inválida. Por favor, inicia sesión para obtener un nuevo token"
-      ) {
+      if (info === "Invalid token. Log in again.") {
         return {
           status: false,
           message: info,
@@ -48,12 +45,12 @@ const query: IResolvers = {
       }
       return {
         status: true,
-        message: "Token correcto",
+        message: "Correct token.",
         user: info.user
       };
     },
-    async getMeasures(patient: String, { db }): Promise<any> {
-      console.log("here");
+    async getMeasures(_: void, { patient }, { db }): Promise<any> {
+      console.log(patient);
       return await db
         .collection("measures")
         .find({ patientId: patient })
