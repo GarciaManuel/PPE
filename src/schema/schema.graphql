@@ -9,6 +9,10 @@ type Query {
   me: ResultGeneral!
   "Obtain patient's measures"
   getMeasures(patient: String!): [Measure!]!
+  "Get all pacients"
+  getPacients(podiatrist: ID!): ResultGeneral!
+  "Get a pacients"
+  getPacient(podiatrist: ID!, patient: ID!): ResultGeneral!
 }
 
 type Mutation {
@@ -27,7 +31,9 @@ type User {
   email: String!
   password: String!
   podiatrist: Boolean
+  currentPodiatrist: ID
   registerDate: String!
+  lastMeetingDate: String
 }
 
 type Sensor {
@@ -61,6 +67,7 @@ input UserInput {
   email: String!
   password: String!
   podiatrist: Boolean
+  currentPodiatrist: ID
 }
 
 input SensorInput {
@@ -100,4 +107,10 @@ extend type ResultGeneral {
   lastName: String!
   email: String!
   password: String!
+}
+extend type ResultGeneral{
+  pacients: [User!]!
+}
+extend type ResultGeneral{
+  patient: User!
 }
