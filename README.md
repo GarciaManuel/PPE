@@ -10,9 +10,6 @@ En este proyecto vamos a aprender como crear un sistema para registro de usuario
 
 ## Intrucciones de uso
 
-### Clonar el repositorio / descargar.
-```git clone https://github.com/graphql-course/3-jwt-login-register-graphql.git```
-
 ### Instalar las dependencias de NPM
 ```npm install```
 
