@@ -21,6 +21,8 @@ type Mutation {
   deleteUser(userId: Int!): ResultGeneral!
   addMeasure(measure: MeasureInput): ResultGeneral!
   uploadCSV(csvFile: Upload): ResultGeneral!
+  "Log in to the system"
+  loginPodiatrist(email: String!, password: String!): ResultGeneral!
   ##deleteMeasure(measureId: String): ResultGeneral!
 }
 
