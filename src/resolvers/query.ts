@@ -49,12 +49,51 @@ const query: IResolvers = {
         user: info.user
       };
     },
-    async getMeasures(_: void, { patient }, { db }): Promise<any> {
+    async getMeasures(_: void, { patient }, { db,token }): Promise<any> {
       console.log(patient);
       return await db
         .collection("measures")
         .find({ patientId: patient })
         .toArray();
+    },
+    async getPacients(_: void, { podiatrist }, { db, token }): Promise<any> {
+      let info: any = new JWT().verify(token);
+      if (info === "Invalid token. Log in again.") {
+        return {
+          status: false,
+          message: info
+        };
+      }
+      let pacients = await db
+      .collection("users")
+      .find({podiatrist: false, currentPodiatrist:podiatrist})
+      .toArray();
+
+      return {
+        status:true,
+        message: "Pacients retrieved",
+        pacients: pacients
+      }
+
+    },
+    async getPacient(_: void, { podiatrist, patient }, { db, token }): Promise<any> {
+      let info: any = new JWT().verify(token);
+      if (info === "Invalid token. Log in again.") {
+        return {
+          status: false,
+          message: info
+        };
+      }
+      let pacient = await db
+      .collection("users")
+      .find({podiatrist: false, currentPodiatrist:podiatrist, id:patient})
+
+      return {
+        status:true,
+        message: "Pacient retrieved",
+        patient: pacient
+      }
+
     }
   }
 };

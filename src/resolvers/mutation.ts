@@ -156,6 +156,38 @@ const mutation: IResolvers = {
             message: `Failed to store correctly the csv`
           };
         });
+    },
+    async loginPodiatrist(_: void, { email, password }, { db }): Promise<any> {
+      const user = await db.collection("users").findOne({ email });
+      if (user === null) {
+        return {
+          status: false,
+          message: "FAILED to log in. User not found.",
+          token: null
+        };
+      }
+
+      if (!bcryptjs.compareSync(password, user.password)) {
+        return {
+          status: false,
+          message: "FAILED to log in. Incorrect password.",
+          token: null
+        };
+      }
+      if(!user.podiatrist){
+        return {
+          status: false,
+          message: "FAILED to log in. Only podiatrist allowed on the system.",
+          token: null
+        };
+      }
+      delete user.password;
+      return {
+        status: true,
+        message: "Correct token.",
+        token: new JWT().sign({ user }),
+        user: user
+      };
     }
     // async deleteMeasure(_: void, { measureId }, { db, token }): Promise<any> {
     //   let info: any = new JWT().verify(token);
