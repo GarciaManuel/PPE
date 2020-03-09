@@ -225,6 +225,34 @@ const mutation: IResolvers = {
         message: "Patients added correctly",
         updatedPatients: updated
       };
+    },
+    async updateUser(_: void, { user, change }, { db, token }): Promise<any> {
+
+      let info: any = new JWT().verify(token);
+      if (info === "Invalid token. Log in again.") {
+        return {
+          status: false,
+          message: info
+        };
+      }
+
+
+      const userModified= await db
+        .collection("users").updateOne({ id: parseInt(user) }, { $set: change });
+      
+        if (userModified.modifiedCount == 0) {
+        return {
+          status: false,
+          message: `User not updated`,
+        };
+      }
+
+      
+
+      return {
+        status: true,
+        message: "User updated",
+      };
     }
     // async deleteMeasure(_: void, { measureId }, { db, token }): Promise<any> {
     //   let info: any = new JWT().verify(token);

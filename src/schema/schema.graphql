@@ -26,7 +26,8 @@ type Mutation {
   "Log in to the system"
   loginPodiatrist(email: String!, password: String!): ResultGeneral!
   ##deleteMeasure(measureId: String): ResultGeneral!
-
+  "Update user"
+  updateUser(user: ID!, change: UserUpdateInput!): ResultGeneral!
   "Add array of patients"
   addPatientsArray(podiatrist: ID!, patients: [ID!]!): ResultGeneral!
 }
@@ -66,6 +67,17 @@ type Meeting {
   anomaly: Boolean!
   podiatrist: String!
   meetingDate: String!
+}
+
+input UserUpdateInput {
+  name: String
+  lastname: String
+  email: String
+  password: String
+  podiatrist: Boolean
+  currentPodiatrist: ID
+  registerDate: String
+  lastMeetingDate: String
 }
 
 input UserInput {
