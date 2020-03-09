@@ -33,9 +33,11 @@ const mutation: IResolvers = {
         .collection("users")
         .insertOne(user)
         .then((result: any) => {
+          delete user.password
           return {
             status: true,
             message: `User ${user.name} ${user.lastname} added correctly`,
+            token: new JWT().sign({ user }),
             user
           };
         })
