@@ -76,6 +76,26 @@ const query: IResolvers = {
       }
 
     },
+    async getFreePacients(_: void, { }, { db, token }): Promise<any> {
+      let info: any = new JWT().verify(token);
+      if (info === "Invalid token. Log in again.") {
+        return {
+          status: false,
+          message: info
+        };
+      }
+      let pacients = await db
+      .collection("users")
+      .find({podiatrist: false, currentPodiatrist:null})
+      .toArray();
+
+      return {
+        status:true,
+        message: "Pacients retrieved",
+        pacients: pacients
+      }
+
+    },
     async getPacient(_: void, { podiatrist, patient }, { db, token }): Promise<any> {
       let info: any = new JWT().verify(token);
       if (info === "Invalid token. Log in again.") {

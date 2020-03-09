@@ -11,6 +11,8 @@ type Query {
   getMeasures(patient: String!): [Measure!]!
   "Get all pacients"
   getPacients(podiatrist: ID!): ResultGeneral!
+  "Get all free pacients"
+  getFreePacients: ResultGeneral!
   "Get a pacients"
   getPacient(podiatrist: ID!, patient: ID!): ResultGeneral!
 }
@@ -24,6 +26,9 @@ type Mutation {
   "Log in to the system"
   loginPodiatrist(email: String!, password: String!): ResultGeneral!
   ##deleteMeasure(measureId: String): ResultGeneral!
+
+  "Add array of patients"
+  addPatientsArray(podiatrist: ID!, patients: [ID!]!): ResultGeneral!
 }
 
 type User {
@@ -115,4 +120,7 @@ extend type ResultGeneral{
 }
 extend type ResultGeneral{
   patient: User!
+}
+extend type ResultGeneral{
+  updatedPatients: Int!
 }

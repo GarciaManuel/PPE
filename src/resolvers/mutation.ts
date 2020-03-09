@@ -188,6 +188,41 @@ const mutation: IResolvers = {
         token: new JWT().sign({ user }),
         user: user
       };
+    },
+    async addPatientsArray(_: void, { podiatrist, patients }, { db, token }): Promise<any> {
+
+      let info: any = new JWT().verify(token);
+      if (info === "Invalid token. Log in again.") {
+        return {
+          status: false,
+          message: info
+        };
+      }
+
+      var updated = 0
+
+      patients.forEach(async (patient: any) => {
+
+        const alonePatient= await db
+        .collection("users").updateOne({ id: parseInt(patient) }, { $set: {currentPodiatrist: podiatrist} });
+      if (alonePatient.modifiedCount == 0) {
+        return {
+          status: false,
+          message: `Patient not found`,
+          updatedPatients: updated
+        };
+      }
+      else
+       updated += 1
+        
+      });
+      
+
+      return {
+        status: true,
+        message: "Patients added correctly",
+        updatedPatients: updated
+      };
     }
     // async deleteMeasure(_: void, { measureId }, { db, token }): Promise<any> {
     //   let info: any = new JWT().verify(token);
