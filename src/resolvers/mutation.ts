@@ -107,7 +107,8 @@ const mutation: IResolvers = {
       if (info === "Invalid token. Log in again.") {
         return {
           status: false,
-          message: info
+          message: info,
+          fileCompleteName: null
         };
       }
 
@@ -116,14 +117,14 @@ const mutation: IResolvers = {
       if (mimetype !== "text/csv") {
         return {
           status: false,
-          message: "File type not accepted, only .csv"
+          message: "File type not accepted, only .csv",
+          fileCompleteName: null
         };
       }
-      const newPath = path.join(
-        __dirname,
-        `../../uploads/${info.user.id}`,
-        `${info.user.email}_${new Datetime().getCurrentDateTime()}_${filename}`
-      );
+      const fileCompleteName = `${
+        info.user.email
+      }_${new Datetime().getCurrentDateTime()}_${filename}`;
+      const newPath = path.join(__dirname, `../../uploads`, fileCompleteName);
       const stream = createReadStream();
 
       if (
@@ -136,7 +137,8 @@ const mutation: IResolvers = {
       ) {
         return {
           status: false,
-          message: "Failed to create stream to store the csv"
+          message: "Failed to create stream to store the csv",
+          fileCompleteName: null
         };
       }
 
@@ -146,14 +148,16 @@ const mutation: IResolvers = {
         .then((result: any) => {
           return {
             status: true,
-            message: `File uploaded succesfully`
+            message: `File uploaded succesfully`,
+            fileCompleteName: fileCompleteName
           };
         })
         .catch((err: any) => {
           console.log(err);
           return {
             status: false,
-            message: `Failed to store correctly the csv`
+            message: `Failed to store correctly the csv`,
+            fileCompleteName: null
           };
         });
     },
@@ -174,7 +178,7 @@ const mutation: IResolvers = {
           token: null
         };
       }
-      if(!user.podiatrist){
+      if (!user.podiatrist) {
         return {
           status: false,
           message: "FAILED to log in. Only podiatrist allowed on the system.",

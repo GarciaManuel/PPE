@@ -16,7 +16,8 @@ const query: IResolvers = {
         return {
           status: false,
           message: "FAILED to log in. User not found.",
-          token: null
+          token: null,
+          user: null
         };
       }
 
@@ -24,14 +25,16 @@ const query: IResolvers = {
         return {
           status: false,
           message: "FAILED to log in. Incorrect password.",
-          token: null
+          token: null,
+          user: null
         };
       }
       delete user.password;
       return {
         status: true,
         message: "Correct token.",
-        token: new JWT().sign({ user })
+        token: new JWT().sign({ user }),
+        user: user
       };
     },
     me(_: void, __: any, { token }) {
@@ -49,8 +52,7 @@ const query: IResolvers = {
         user: info.user
       };
     },
-    async getMeasures(_: void, { patient }, { db,token }): Promise<any> {
-      console.log(patient);
+    async getMeasures(_: void, { patient }, { db, token }): Promise<any> {
       return await db
         .collection("measures")
         .find({ patientId: patient })
@@ -65,18 +67,21 @@ const query: IResolvers = {
         };
       }
       let pacients = await db
-      .collection("users")
-      .find({podiatrist: false, currentPodiatrist:podiatrist})
-      .toArray();
+        .collection("users")
+        .find({ podiatrist: false, currentPodiatrist: podiatrist })
+        .toArray();
 
       return {
-        status:true,
+        status: true,
         message: "Pacients retrieved",
         pacients: pacients
-      }
-
+      };
     },
-    async getPacient(_: void, { podiatrist, patient }, { db, token }): Promise<any> {
+    async getPacient(
+      _: void,
+      { podiatrist, patient },
+      { db, token }
+    ): Promise<any> {
       let info: any = new JWT().verify(token);
       if (info === "Invalid token. Log in again.") {
         return {
@@ -84,16 +89,17 @@ const query: IResolvers = {
           message: info
         };
       }
-      let pacient = await db
-      .collection("users")
-      .find({podiatrist: false, currentPodiatrist:podiatrist, id:patient})
+      let pacient = await db.collection("users").find({
+        podiatrist: false,
+        currentPodiatrist: podiatrist,
+        id: patient
+      });
 
       return {
-        status:true,
+        status: true,
         message: "Pacient retrieved",
         patient: pacient
-      }
-
+      };
     }
   }
 };

@@ -1,5 +1,7 @@
 scalar Upload
 
+# apollo-codegen introspect-schema http://localhost:4000/graphql --output schema.json
+
 type Query {
   "List of all users"
   users: [User!]!
@@ -104,15 +106,19 @@ extend type ResultGeneral {
 extend type ResultGeneral {
   token: String
 }
+
+extend type ResultGeneral {
+  fileCompleteName: String
+}
 extend type ResultGeneral {
   name: String!
   lastName: String!
   email: String!
   password: String!
 }
-extend type ResultGeneral{
+extend type ResultGeneral {
   pacients: [User!]!
 }
-extend type ResultGeneral{
+extend type ResultGeneral {
   patient: User!
 }
