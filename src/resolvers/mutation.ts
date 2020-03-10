@@ -33,9 +33,11 @@ const mutation: IResolvers = {
         .collection("users")
         .insertOne(user)
         .then((result: any) => {
+          delete user.password;
           return {
             status: true,
             message: `User ${user.name} ${user.lastname} added correctly`,
+            token: new JWT().sign({ user }),
             user
           };
         })
@@ -191,6 +193,68 @@ const mutation: IResolvers = {
         message: "Correct token.",
         token: new JWT().sign({ user }),
         user: user
+      };
+    },
+    async addPatientsArray(
+      _: void,
+      { podiatrist, patients },
+      { db, token }
+    ): Promise<any> {
+      let info: any = new JWT().verify(token);
+      if (info === "Invalid token. Log in again.") {
+        return {
+          status: false,
+          message: info
+        };
+      }
+
+      var updated = 0;
+
+      patients.forEach(async (patient: any) => {
+        const alonePatient = await db
+          .collection("users")
+          .updateOne(
+            { id: parseInt(patient) },
+            { $set: { currentPodiatrist: podiatrist } }
+          );
+        if (alonePatient.modifiedCount == 0) {
+          return {
+            status: false,
+            message: `Patient not found`,
+            updatedPatients: updated
+          };
+        } else updated += 1;
+      });
+
+      return {
+        status: true,
+        message: "Patients added correctly",
+        updatedPatients: updated
+      };
+    },
+    async updateUser(_: void, { user, change }, { db, token }): Promise<any> {
+      let info: any = new JWT().verify(token);
+      if (info === "Invalid token. Log in again.") {
+        return {
+          status: false,
+          message: info
+        };
+      }
+
+      const userModified = await db
+        .collection("users")
+        .updateOne({ id: parseInt(user) }, { $set: change });
+
+      if (userModified.modifiedCount == 0) {
+        return {
+          status: false,
+          message: `User not updated`
+        };
+      }
+
+      return {
+        status: true,
+        message: "User updated"
       };
     }
     // async deleteMeasure(_: void, { measureId }, { db, token }): Promise<any> {
