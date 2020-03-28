@@ -25,6 +25,8 @@ type Mutation {
   deleteUser(userId: Int!): ResultGeneral!
   addMeasure(measure: MeasureInput): ResultGeneral!
   uploadCSV(csvFile: Upload): ResultGeneral!
+  "Obtain patient's measures"
+  getMeasures(patient: String!): [Measure!]!
   "Log in to the system"
   loginPodiatrist(email: String!, password: String!): ResultGeneral!
   ##deleteMeasure(measureId: String): ResultGeneral!
@@ -44,6 +46,8 @@ type User {
   currentPodiatrist: ID
   registerDate: String!
   lastMeetingDate: String
+  anomaly : Boolean
+  anomaly_threshold : Int
 }
 
 type Sensor {
@@ -66,7 +70,6 @@ type Measure {
 type Meeting {
   id: ID!
   pacient: String!
-  anomaly: Boolean!
   podiatrist: String!
   meetingDate: String!
 }
@@ -80,6 +83,8 @@ input UserUpdateInput {
   currentPodiatrist: ID
   registerDate: String
   lastMeetingDate: String
+  anomaly : Boolean
+  anomaly_threshold : Int
 }
 
 input UserInput {

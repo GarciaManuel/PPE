@@ -163,6 +163,12 @@ const mutation: IResolvers = {
           };
         });
     },
+    async getMeasures(_: void, { patient }, { db, token }): Promise<any> {
+      return await db
+        .collection("measures")
+        .find({ patientId: patient })
+        .toArray();
+    },
     async loginPodiatrist(_: void, { email, password }, { db }): Promise<any> {
       const user = await db.collection("users").findOne({ email });
       if (user === null) {
@@ -233,6 +239,10 @@ const mutation: IResolvers = {
       };
     },
     async updateUser(_: void, { user, change }, { db, token }): Promise<any> {
+    if(change.password)
+    {
+      change.password = bcryptjs.hashSync(change.password, 10);
+    }
       let info: any = new JWT().verify(token);
       if (info === "Invalid token. Log in again.") {
         return {
