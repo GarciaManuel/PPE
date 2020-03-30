@@ -48,6 +48,16 @@ type User {
   lastMeetingDate: String
   anomaly : Boolean
   anomaly_threshold : Int
+  sensor_1_top_position : Float
+  sensor_2_top_position : Float
+  sensor_3_top_position : Float
+  sensor_4_top_position : Float
+  sensor_5_top_position : Float
+  sensor_1_left_position : Float
+  sensor_2_left_position : Float
+  sensor_3_left_position : Float
+  sensor_4_left_position : Float
+  sensor_5_left_position : Float
 }
 
 type Sensor {
@@ -85,6 +95,16 @@ input UserUpdateInput {
   lastMeetingDate: String
   anomaly : Boolean
   anomaly_threshold : Int
+  sensor_1_top_position : Float
+  sensor_2_top_position : Float
+  sensor_3_top_position : Float
+  sensor_4_top_position : Float
+  sensor_5_top_position : Float
+  sensor_1_left_position : Float
+  sensor_2_left_position : Float
+  sensor_3_left_position : Float
+  sensor_4_left_position : Float
+  sensor_5_left_position : Float
 }
 
 input UserInput {
