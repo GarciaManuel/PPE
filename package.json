@@ -4,10 +4,13 @@
   "description": "Sistema de autenticación JWT con MongoDB en GraphQL",
   "main": "build/server.js",
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "start": "node build/server.js",
     "build": "tsc -p . && ncp src/schema build/schema",
     "start:dev": "npm run build:dev",
-    "build:dev": "nodemon 'src/server.ts' --exec 'ts-node' src/server.ts -e ts,graphql"
+    "build:dev": "nodemon 'src/server.ts' --exec 'ts-node' src/server.ts -e ts,graphql",
+    "start:devW": "npm run build:devW",
+    "build:devW": "nodemon src/server.ts --exec ts-node src/server.ts -e ts,graphql"
   },
   "keywords": [
     "graphql",
@@ -18,6 +21,7 @@
   "author": "Anartz Mugika Ledo <mugan86@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "apollo-codegen": "^0.20.2",
     "apollo-server-express": "^2.6.7",
     "bcryptjs": "^2.4.3",
     "chalk": "^2.4.2",
@@ -25,15 +29,17 @@
     "cors": "^2.8.5",
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
-    "graphql": "^14.3.1",
+    "graphql": "^14.6.0",
     "graphql-import-node": "0.0.4",
     "graphql-playground-middleware-express": "^1.7.12",
     "graphql-tools": "^4.0.5",
+    "graphql-upload": "^10.0.0",
     "http": "0.0.0",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.2.7",
     "ncp": "^2.0.0",
     "nodemon": "^2.0.2",
+    "ts-node": "^8.6.2",
     "typescript": "^3.5.2"
   },
   "devDependencies": {

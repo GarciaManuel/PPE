@@ -1,45 +1,303 @@
 import { IResolvers } from "graphql-tools";
 import { Datetime } from "../lib/datetime";
-import bcryptjs from 'bcryptjs';
+import bcryptjs from "bcryptjs";
+import JWT from "../lib/jwt";
 const mutation: IResolvers = {
-    Mutation: {
-        async register(_: void, { user }, { db }): Promise<any> {
+  Mutation: {
+    async register(_: void, { user }, { db }): Promise<any> {
+      const userCheck = await db
+        .collection("users")
+        .findOne({ email: user.email });
 
-            const userCheck = await db.collection('users').findOne({ email: user.email });
+      if (userCheck !== null) {
+        return {
+          status: false,
+          message: `User NOT registered, the user already exists ${user.email}`,
+          user: null
+        };
+      }
+      const lastUser = await db
+        .collection("users")
+        .find()
+        .limit(1)
+        .sort({ registerDate: -1 })
+        .toArray();
+      if (lastUser.length === 0) {
+        user.id = 1;
+      } else {
+        user.id = lastUser[0].id + 1;
+      }
+      user.password = bcryptjs.hashSync(user.password, 10);
+      user.registerDate = new Datetime().getCurrentDateTime();
+      return await db
+        .collection("users")
+        .insertOne(user)
+        .then((result: any) => {
+          delete user.password;
+          return {
+            status: true,
+            message: `User ${user.name} ${user.lastname} added correctly`,
+            token: new JWT().sign({ user }),
+            user
+          };
+        })
+        .catch((err: any) => {
+          return {
+            status: false,
+            message: `User NOT added correctly`,
+            user: null
+          };
+        });
+    },
+    async deleteUser(_: void, { userId }, { db, token }): Promise<any> {
+      let info: any = new JWT().verify(token);
+      if (info === "Invalid token. Log in again.") {
+        return {
+          status: false,
+          message: info,
+          user: null
+        };
+      }
+      return await db
+        .collection("users")
+        .deleteOne({ id: userId })
+        .then((result: any) => {
+          console.log(result.result);
+          let done = result.result.n && result.result.ok;
+          let deleted = "";
+          if (!done) deleted = "NO";
+          return {
+            status: done,
+            message: `User ${deleted} deleted correctly`
+          };
+        })
+        .catch((err: any) => {
+          console.log(err);
+          return {
+            status: false,
+            message: `Deleting user failed`
+          };
+        });
+    },
+    async addMeasure(_: void, { measure }, { db }): Promise<any> {
+      console.log(measure);
+      measure.date = new Datetime().getCurrentDateTime();
+      return await db
+        .collection("measures")
+        .insertOne(measure)
+        .then((result: any) => {
+          return {
+            status: true,
+            message: `Successful addition to measures.`,
+            measure
+          };
+        })
+        .catch((err: any) => {
+          return {
+            status: false,
+            message: `Failed addition to measures.`,
+            measure: null
+          };
+        });
+    },
 
-            if (userCheck !== null) {
-                return {
-                    status: false,
-                    message: `Usuario NO registrado porque ya existe el usuario ${user.email}`,
-                    user: null
-                };
-            }
-            const lastUser = await db.collection('users').find()
-                .limit(1).sort({ registerDate: -1 }).toArray();
-            if (lastUser.length === 0) {
-                user.id = 1;
-            } else {
-                user.id = lastUser[0].id + 1;
-            }
-            user.password = bcryptjs.hashSync(user.password, 10);
-            user.registerDate = new Datetime().getCurrentDateTime();
-            return await db.collection('users').insertOne(user)
-                .then((result: any) => {
-                    return {
-                        status: true,
-                        message: `Usuario ${user.name} ${user.lastname} añadido correctamente`,
-                        user
-                    };
-                })
-                .catch((err: any) => {
-                    return {
-                        status: false,
-                        message: `Usuario NO añadido correctamente`,
-                        user: null
-                    };
-                });
-        }
+    async uploadCSV(_: void, { csvFile }, { db, token }): Promise<any> {
+      const path = require("path");
+      const { createWriteStream } = require("fs");
+
+      let info: any = new JWT().verify(token);
+      if (info === "Invalid token. Log in again.") {
+        return {
+          status: false,
+          message: info,
+          fileCompleteName: null
+        };
+      }
+
+      const { createReadStream, filename, mimetype, encoding } = await csvFile;
+      console.log(mimetype);
+      if (mimetype !== "text/csv") {
+        return {
+          status: false,
+          message: "File type not accepted, only .csv",
+          fileCompleteName: null
+        };
+      }
+      const fileCompleteName = `${
+        info.user.email
+      }_${new Datetime().getCurrentDateTime()}_${filename}`;
+      const newPath = path.join(__dirname, `../../uploads`, fileCompleteName);
+      const stream = createReadStream();
+
+      if (
+        !(await new Promise((resolve, reject) =>
+          stream
+            .pipe(createWriteStream(newPath))
+            .on("error", (error: any) => reject(error))
+            .on("finish", () => resolve({ newPath }))
+        ))
+      ) {
+        return {
+          status: false,
+          message: "Failed to create stream to store the csv",
+          fileCompleteName: null
+        };
+      }
+
+      return await db
+        .collection("files")
+        .insertOne({ name: filename })
+        .then((result: any) => {
+          return {
+            status: true,
+            message: `File uploaded succesfully`,
+            fileCompleteName: fileCompleteName
+          };
+        })
+        .catch((err: any) => {
+          console.log(err);
+          return {
+            status: false,
+            message: `Failed to store correctly the csv`,
+            fileCompleteName: null
+          };
+        });
+    },
+    async getMeasures(_: void, { patient }, { db, token }): Promise<any> {
+      return await db
+        .collection("measures")
+        .find({ patientId: patient })
+        .toArray();
+    },
+    async loginPodiatrist(_: void, { email, password }, { db }): Promise<any> {
+      const user = await db.collection("users").findOne({ email });
+      if (user === null) {
+        return {
+          status: false,
+          message: "FAILED to log in. User not found.",
+          token: null
+        };
+      }
+
+      if (!bcryptjs.compareSync(password, user.password)) {
+        return {
+          status: false,
+          message: "FAILED to log in. Incorrect password.",
+          token: null
+        };
+      }
+      if (!user.podiatrist) {
+        return {
+          status: false,
+          message: "FAILED to log in. Only podiatrist allowed on the system.",
+          token: null
+        };
+      }
+      delete user.password;
+      return {
+        status: true,
+        message: "Correct token.",
+        token: new JWT().sign({ user }),
+        user: user
+      };
+    },
+    async addPatientsArray(
+      _: void,
+      { podiatrist, patients },
+      { db, token }
+    ): Promise<any> {
+      let info: any = new JWT().verify(token);
+      if (info === "Invalid token. Log in again.") {
+        return {
+          status: false,
+          message: info
+        };
+      }
+
+      var updated = 0;
+
+      patients.forEach(async (patient: any) => {
+        const alonePatient = await db
+          .collection("users")
+          .updateOne(
+            { id: parseInt(patient) },
+            { $set: { currentPodiatrist: podiatrist } }
+          );
+        if (alonePatient.modifiedCount == 0) {
+          return {
+            status: false,
+            message: `Patient not found`,
+            updatedPatients: updated
+          };
+        } else updated += 1;
+      });
+
+      return {
+        status: true,
+        message: "Patients added correctly",
+        updatedPatients: updated
+      };
+    },
+    async updateUser(_: void, { user, change }, { db, token }): Promise<any> {
+    if(change.password)
+    {
+      change.password = bcryptjs.hashSync(change.password, 10);
     }
-}
+      let info: any = new JWT().verify(token);
+      if (info === "Invalid token. Log in again.") {
+        return {
+          status: false,
+          message: info
+        };
+      }
+
+      const userModified = await db
+        .collection("users")
+        .updateOne({ id: parseInt(user) }, { $set: change });
+
+      if (userModified.modifiedCount == 0) {
+        return {
+          status: false,
+          message: `User not updated`
+        };
+      }
+
+      return {
+        status: true,
+        message: "User updated"
+      };
+    }
+    // async deleteMeasure(_: void, { measureId }, { db, token }): Promise<any> {
+    //   let info: any = new JWT().verify(token);
+    //   if (info === "Invalid token. You need to log in first.") {
+    //     return {
+    //       status: false,
+    //       message: info,
+    //       user: null
+    //     };
+    //   }
+    //   return await db
+    //     .collection("measures")
+    //     .deleteOne({ id: measureId })
+    //     .then((result: any) => {
+    //       console.log(result.result);
+    //       let done = result.result.n && result.result.ok;
+    //       let deleted = "";
+    //       if (!done) deleted = "NO";
+    //       return {
+    //         status: done,
+    //         message: `Measure ${deleted} successfully deleted.`
+    //       };
+    //     })
+    //     .catch((err: any) => {
+    //       console.log(err);
+    //       return {
+    //         status: false,
+    //         message: `Failed attempt to delete measure.`
+    //       };
+    //     });
+    // }
+  }
+};
 
 export default mutation;

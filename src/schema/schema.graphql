@@ -1,41 +1,169 @@
- type Query {
-    "Obtenemos las lista de todos los usuarios"
-    users: [User!]!
-    "Iniciamos sesión en el sistema"
-    login(email: String!, password: String!): ResultToken!
-    "Obtener nuestra información con el token"
-    me: ResultUser!
+scalar Upload
+
+# apollo-codegen introspect-schema http://localhost:4000/graphql --output schema.json
+
+type Query {
+  "List of all users"
+  users: [User!]!
+  "Log in to the system"
+  login(email: String!, password: String!): ResultGeneral!
+  "Get user information with the token"
+  me: ResultGeneral!
+  "Obtain patient's measures"
+  getMeasures(patient: String!): [Measure!]!
+  "Get all pacients"
+  getPacients(podiatrist: ID!): ResultGeneral!
+  "Get all free pacients"
+  getFreePacients: ResultGeneral!
+  "Get a pacients"
+  getPacient(podiatrist: ID!, patient: ID!): ResultGeneral!
 }
 
 type Mutation {
-    "Registro de los usuarios en el sistema"
-    register(user: UserInput): ResultUser!
+  "Users registration"
+  register(user: UserInput): ResultGeneral!
+  deleteUser(userId: Int!): ResultGeneral!
+  addMeasure(measure: MeasureInput): ResultGeneral!
+  uploadCSV(csvFile: Upload): ResultGeneral!
+  "Obtain patient's measures"
+  getMeasures(patient: String!): [Measure!]!
+  "Log in to the system"
+  loginPodiatrist(email: String!, password: String!): ResultGeneral!
+  ##deleteMeasure(measureId: String): ResultGeneral!
+  "Update user"
+  updateUser(user: ID!, change: UserUpdateInput!): ResultGeneral!
+  "Add array of patients"
+  addPatientsArray(podiatrist: ID!, patients: [ID!]!): ResultGeneral!
 }
 
 type User {
-    id: ID!
-    name: String!
-    lastname: String!
-    email: String!
-    password: String
-    registerDate: String!
+  id: ID!
+  name: String!
+  lastname: String!
+  email: String!
+  password: String!
+  podiatrist: Boolean
+  currentPodiatrist: ID
+  registerDate: String!
+  lastMeetingDate: String
+  anomaly : Boolean
+  anomaly_threshold : Int
+  sensor_1_top_position : Float
+  sensor_2_top_position : Float
+  sensor_3_top_position : Float
+  sensor_4_top_position : Float
+  sensor_5_top_position : Float
+  sensor_1_left_position : Float
+  sensor_2_left_position : Float
+  sensor_3_left_position : Float
+  sensor_4_left_position : Float
+  sensor_5_left_position : Float
+}
+
+type Sensor {
+  number: Int!
+  posX: Float!
+  posY: Float!
+  averagePressureS: Float!
+  minPressureS: Float!
+  maxPressureS: Float!
+}
+
+type Measure {
+  patientId: String!
+  date: String!
+  duration: String
+  csv: String
+  sensors: [Sensor]!
+}
+
+type Meeting {
+  id: ID!
+  pacient: String!
+  podiatrist: String!
+  meetingDate: String!
+}
+
+input UserUpdateInput {
+  name: String
+  lastname: String
+  email: String
+  password: String
+  podiatrist: Boolean
+  currentPodiatrist: ID
+  registerDate: String
+  lastMeetingDate: String
+  anomaly : Boolean
+  anomaly_threshold : Int
+  sensor_1_top_position : Float
+  sensor_2_top_position : Float
+  sensor_3_top_position : Float
+  sensor_4_top_position : Float
+  sensor_5_top_position : Float
+  sensor_1_left_position : Float
+  sensor_2_left_position : Float
+  sensor_3_left_position : Float
+  sensor_4_left_position : Float
+  sensor_5_left_position : Float
 }
 
 input UserInput {
-    name: String!
-    lastname: String!
-    email: String!
-    password: String!
+  name: String!
+  lastname: String!
+  email: String!
+  password: String!
+  podiatrist: Boolean
+  currentPodiatrist: ID
 }
 
-type ResultUser {
-    status: Boolean!
-    message: String!
-    user: User
+input SensorInput {
+  number: Int
+  posX: Float
+  posY: Float
+  averagePressureS: Float!
+  minPressureS: Float!
+  maxPressureS: Float!
 }
 
-type ResultToken {
-    status: Boolean!
-    message: String!
-    token: String
+input MeasureInput {
+  patientId: String!
+  duration: String
+  csv: String
+  sensors: [SensorInput]!
+}
+
+type ResultGeneral {
+  status: Boolean!
+  message: String!
+}
+
+extend type ResultGeneral {
+  measure: Measure
+}
+
+extend type ResultGeneral {
+  user: User
+}
+
+extend type ResultGeneral {
+  token: String
+}
+
+extend type ResultGeneral {
+  fileCompleteName: String
+}
+extend type ResultGeneral {
+  name: String!
+  lastName: String!
+  email: String!
+  password: String!
+}
+extend type ResultGeneral {
+  pacients: [User!]!
+}
+extend type ResultGeneral {
+  patient: User!
+}
+extend type ResultGeneral {
+  updatedPatients: Int!
 }
