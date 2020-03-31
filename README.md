@@ -18,7 +18,7 @@ Creamos el fichero .env dentro del directorio "src"
 ```
 PORT=<numero-puerto>
 SECRET=<PALABRA_SECRETA>
-DATABASE=mongodb://localhost:27017/<base-de-datos>
+DATABASE=mongodb+srv://TomJ92:<tomtom>@ppe-lyarb.gcp.mongodb.net/test?retryWrites=true&w=majority<base-de-datos>
 ```
 
 ### Iniciar en debug
