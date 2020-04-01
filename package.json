@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Sistema de autenticación JWT con MongoDB en GraphQL",
   "main": "build/server.js",
+  "engines": {
+    "node": "12.14.1"
+  },
   "scripts": {
     "preinstall": "npx npm-force-resolutions",
     "start": "node build/server.js",
