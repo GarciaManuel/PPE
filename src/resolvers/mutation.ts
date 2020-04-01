@@ -33,16 +33,16 @@ const mutation: IResolvers = {
       {
         user.anomaly=false;
         user.anomaly_threshold= 20;
-        user.sensor_1_top_position=parseFloat(454);
-        user.sensor_2_top_position =parseFloat(454);
-        user.sensor_3_top_position=parseFloat(454);
-        user.sensor_4_top_position =parseFloat(454);
-        user.sensor_5_top_position=parseFloat(454);
-        user.sensor_1_left_position=parseFloat(412);
-        user.sensor_2_left_position =parseFloat(452);
-        user.sensor_3_left_position=parseFloat(492);
-        user.sensor_4_left_position =parseFloat(532);
-        user.sensor_5_left_position=parseFloat(572);
+        user.sensor_1_top_position=454;
+        user.sensor_2_top_position =454;
+        user.sensor_3_top_position=454;
+        user.sensor_4_top_position =454;
+        user.sensor_5_top_position=454;
+        user.sensor_1_left_position=412;
+        user.sensor_2_left_position =452;
+        user.sensor_3_left_position=492;
+        user.sensor_4_left_position =532;
+        user.sensor_5_left_position=572;
       }
       return await db
         .collection("users")
