@@ -1,4 +1,5 @@
-import MongoClient from 'mongodb';
+let mongo = require('mongodb');
+let MongoClient = mongo.MongoClient;
 import chalk from 'chalk';
 class Database {
 
