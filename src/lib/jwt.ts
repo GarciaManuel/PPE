@@ -1,6 +1,7 @@
 import { SECRET_KEY } from "../config/constants";
 
 const jwt = require('jsonwebtoken');
+
 class JWT {
     private secretKey = SECRET_KEY as string;
 
