@@ -9,8 +9,7 @@
   "scripts": {
     "preinstall": "npx npm-force-resolutions",
     "start": "node build/server.js",
-    "prebuild" :"npm install @types/mongodb",
-    "build": "tsc -p . && ncp src/schema build/schema",
+    "build": "npm install @types/mongodb && npm install @types/jsonwebtoken && npm install @types/bcryptjs && npm install @types/compression && tsc -p . && ncp src/schema build/schema",
     "start:dev": "npm run build:dev",
     "build:dev": "nodemon 'src/server.ts' --exec 'ts-node' src/server.ts -e ts,graphql",
     "start:devW": "npm run build:devW",
