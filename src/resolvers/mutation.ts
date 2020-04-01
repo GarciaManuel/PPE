@@ -32,7 +32,7 @@ const mutation: IResolvers = {
       if(user.podiatrist == false)
       {
         user.anomaly=false;
-        user.anomaly_thredshold = 20;
+        user.anomaly_threshold= 20;
         user.sensor_1_top_position=parseFloat(454);
         user.sensor_2_top_position =parseFloat(454);
         user.sensor_3_top_position=parseFloat(454);
