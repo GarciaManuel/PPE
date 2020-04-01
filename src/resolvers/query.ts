@@ -1,6 +1,6 @@
 import { IResolvers } from "graphql-tools";
 import JWT from "../lib/jwt";
-import bcryptjs from "bcryptjs";
+var bcryptjs = require('bcryptjs');
 
 const query: IResolvers = {
   Query: {

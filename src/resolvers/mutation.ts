@@ -1,6 +1,6 @@
 import { IResolvers } from "graphql-tools";
 import { Datetime } from "../lib/datetime";
-import bcryptjs from "bcryptjs";
+var bcryptjs = require('bcryptjs');
 import JWT from "../lib/jwt";
 const mutation: IResolvers = {
   Mutation: {

@@ -1,5 +1,5 @@
 import express from 'express';
-import compression from 'compression';
+var compression = require('compression');
 import cors from 'cors';
 import schema from './schema';
 import { ApolloServer } from 'apollo-server-express';
