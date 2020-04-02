@@ -1,6 +1,6 @@
 import { IResolvers } from "graphql-tools";
 import { Datetime } from "../lib/datetime";
-var bcryptjs = require('bcryptjs');
+var bcryptjs = require("bcryptjs");
 import JWT from "../lib/jwt";
 const mutation: IResolvers = {
   Mutation: {
@@ -29,20 +29,19 @@ const mutation: IResolvers = {
       }
       user.password = bcryptjs.hashSync(user.password, 10);
       user.registerDate = new Datetime().getCurrentDateTime();
-      if(user.podiatrist == false)
-      {
-        user.anomaly=false;
-        user.anomaly_threshold= 20;
-        user.sensor_1_top_position=454;
-        user.sensor_2_top_position =454;
-        user.sensor_3_top_position=454;
-        user.sensor_4_top_position =454;
-        user.sensor_5_top_position=454;
-        user.sensor_1_left_position=412;
-        user.sensor_2_left_position =452;
-        user.sensor_3_left_position=492;
-        user.sensor_4_left_position =532;
-        user.sensor_5_left_position=572;
+      if (user.podiatrist == false) {
+        user.anomaly = false;
+        user.anomaly_threshold = 20;
+        user.sensor_1_top_position = 454;
+        user.sensor_2_top_position = 454;
+        user.sensor_3_top_position = 454;
+        user.sensor_4_top_position = 454;
+        user.sensor_5_top_position = 454;
+        user.sensor_1_left_position = 412;
+        user.sensor_2_left_position = 452;
+        user.sensor_3_left_position = 492;
+        user.sensor_4_left_position = 532;
+        user.sensor_5_left_position = 572;
       }
       return await db
         .collection("users")
@@ -95,7 +94,6 @@ const mutation: IResolvers = {
         });
     },
     async addMeasure(_: void, { measure }, { db }): Promise<any> {
-      console.log(measure);
       measure.date = new Datetime().getCurrentDateTime();
       return await db
         .collection("measures")
@@ -116,7 +114,7 @@ const mutation: IResolvers = {
         });
     },
 
-    async uploadCSV(_: void, { csvFile }, { db, token }): Promise<any> {
+    async uploadCSV(_: void, { csvFile, token }, { db }): Promise<any> {
       const path = require("path");
       const { createWriteStream } = require("fs");
 
@@ -130,7 +128,6 @@ const mutation: IResolvers = {
       }
 
       const { createReadStream, filename, mimetype, encoding } = await csvFile;
-      console.log(mimetype);
       if (mimetype !== "text/csv") {
         return {
           status: false,
@@ -138,6 +135,7 @@ const mutation: IResolvers = {
           fileCompleteName: null
         };
       }
+
       const fileCompleteName = `${
         info.user.email
       }_${new Datetime().getCurrentDateTime()}_${filename}`;
@@ -148,7 +146,10 @@ const mutation: IResolvers = {
         !(await new Promise((resolve, reject) =>
           stream
             .pipe(createWriteStream(newPath))
-            .on("error", (error: any) => reject(error))
+            .on("error", (error: any) => {
+              console.log(error);
+              reject(error);
+            })
             .on("finish", () => resolve({ newPath }))
         ))
       ) {
@@ -178,6 +179,7 @@ const mutation: IResolvers = {
           };
         });
     },
+
     async getMeasures(_: void, { patient }, { db, token }): Promise<any> {
       return await db
         .collection("measures")
@@ -254,10 +256,9 @@ const mutation: IResolvers = {
       };
     },
     async updateUser(_: void, { user, change }, { db, token }): Promise<any> {
-    if(change.password)
-    {
-      change.password = bcryptjs.hashSync(change.password, 10);
-    }
+      if (change.password) {
+        change.password = bcryptjs.hashSync(change.password, 10);
+      }
       let info: any = new JWT().verify(token);
       if (info === "Invalid token. Log in again.") {
         return {

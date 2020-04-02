@@ -23,8 +23,10 @@ type Mutation {
   "Users registration"
   register(user: UserInput): ResultGeneral!
   deleteUser(userId: Int!): ResultGeneral!
+  "Add patient's measure"
   addMeasure(measure: MeasureInput): ResultGeneral!
-  uploadCSV(csvFile: Upload): ResultGeneral!
+  "Upload csv file"
+  uploadCSV(csvFile: Upload, token: String): ResultGeneral!
   "Obtain patient's measures"
   getMeasures(patient: String!): [Measure!]!
   "Log in to the system"
@@ -46,18 +48,18 @@ type User {
   currentPodiatrist: ID
   registerDate: String!
   lastMeetingDate: String
-  anomaly : Boolean
-  anomaly_threshold : Int
-  sensor_1_top_position : Float
-  sensor_2_top_position : Float
-  sensor_3_top_position : Float
-  sensor_4_top_position : Float
-  sensor_5_top_position : Float
-  sensor_1_left_position : Float
-  sensor_2_left_position : Float
-  sensor_3_left_position : Float
-  sensor_4_left_position : Float
-  sensor_5_left_position : Float
+  anomaly: Boolean
+  anomaly_threshold: Int
+  sensor_1_top_position: Float
+  sensor_2_top_position: Float
+  sensor_3_top_position: Float
+  sensor_4_top_position: Float
+  sensor_5_top_position: Float
+  sensor_1_left_position: Float
+  sensor_2_left_position: Float
+  sensor_3_left_position: Float
+  sensor_4_left_position: Float
+  sensor_5_left_position: Float
 }
 
 type Sensor {
@@ -93,18 +95,18 @@ input UserUpdateInput {
   currentPodiatrist: ID
   registerDate: String
   lastMeetingDate: String
-  anomaly : Boolean
-  anomaly_threshold : Int
-  sensor_1_top_position : Float
-  sensor_2_top_position : Float
-  sensor_3_top_position : Float
-  sensor_4_top_position : Float
-  sensor_5_top_position : Float
-  sensor_1_left_position : Float
-  sensor_2_left_position : Float
-  sensor_3_left_position : Float
-  sensor_4_left_position : Float
-  sensor_5_left_position : Float
+  anomaly: Boolean
+  anomaly_threshold: Int
+  sensor_1_top_position: Float
+  sensor_2_top_position: Float
+  sensor_3_top_position: Float
+  sensor_4_top_position: Float
+  sensor_5_top_position: Float
+  sensor_1_left_position: Float
+  sensor_2_left_position: Float
+  sensor_3_left_position: Float
+  sensor_4_left_position: Float
+  sensor_5_left_position: Float
 }
 
 input UserInput {
