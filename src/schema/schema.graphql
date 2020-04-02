@@ -60,6 +60,11 @@ type User {
   sensor_3_left_position: Float
   sensor_4_left_position: Float
   sensor_5_left_position: Float
+  sensor_1_anomaly_state : Boolean
+  sensor_2_anomaly_state : Boolean
+  sensor_3_anomaly_state : Boolean
+  sensor_4_anomaly_state : Boolean
+  sensor_5_anomaly_state : Boolean
 }
 
 type Sensor {
@@ -107,6 +112,11 @@ input UserUpdateInput {
   sensor_3_left_position: Float
   sensor_4_left_position: Float
   sensor_5_left_position: Float
+  sensor_1_anomaly_state : Boolean
+  sensor_2_anomaly_state : Boolean
+  sensor_3_anomaly_state : Boolean
+  sensor_4_anomaly_state : Boolean
+  sensor_5_anomaly_state : Boolean
 }
 
 input UserInput {
