@@ -139,7 +139,7 @@ const mutation: IResolvers = {
       const fileCompleteName = `${
         info.user.email
       }_${new Datetime().getCurrentDateTime()}_${filename}`;
-      const newPath = path.join(__dirname, `uploads`, fileCompleteName);
+      const newPath = path.join(__dirname, `../../../uploads`, fileCompleteName);
       const stream = createReadStream();
 
       if (
