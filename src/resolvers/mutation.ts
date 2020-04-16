@@ -4,6 +4,7 @@ var bcryptjs = require("bcryptjs");
 import JWT from "../lib/jwt";
 const mutation: IResolvers = {
   Mutation: {
+    //Register a user
     async register(_: void, { user }, { db }): Promise<any> {
       const userCheck = await db
         .collection("users")
@@ -16,6 +17,7 @@ const mutation: IResolvers = {
           user: null
         };
       }
+      //Get the last user so we can generate an ID for the next one
       const lastUser = await db
         .collection("users")
         .find()
@@ -27,8 +29,12 @@ const mutation: IResolvers = {
       } else {
         user.id = lastUser[0].id + 1;
       }
+      //Hash pasword
       user.password = bcryptjs.hashSync(user.password, 10);
+      //Add registerDate
       user.registerDate = new Datetime().getCurrentDateTime();
+      
+      //If not a podiatrist then set the sensors as default
       if (user.podiatrist == false) {
         user.anomaly = false;
         user.anomaly_threshold = 20;
@@ -63,6 +69,7 @@ const mutation: IResolvers = {
           };
         });
     },
+    //Delete a user
     async deleteUser(_: void, { userId }, { db, token }): Promise<any> {
       let info: any = new JWT().verify(token);
       if (info === "Invalid token. Log in again.") {
@@ -77,6 +84,7 @@ const mutation: IResolvers = {
         .deleteOne({ id: userId })
         .then((result: any) => {
           console.log(result.result);
+          //If mongoDB confirmed the deleting of the item then return true
           let done = result.result.n && result.result.ok;
           let deleted = "";
           if (!done) deleted = "NO";
@@ -93,6 +101,7 @@ const mutation: IResolvers = {
           };
         });
     },
+    //Add a measure 
     async addMeasure(_: void, { measure }, { db }): Promise<any> {
       measure.date = new Datetime().getCurrentDateTime();
       return await db
@@ -114,10 +123,13 @@ const mutation: IResolvers = {
         });
     },
 
+    //Upload a CSV file
     async uploadCSV(_: void, { csvFile, token }, { db }): Promise<any> {
       const path = require("path");
+      //Create a stream to write in the server
       const { createWriteStream } = require("fs");
 
+      //Check if logged in
       let info: any = new JWT().verify(token);
       if (info === "Invalid token. Log in again.") {
         return {
@@ -127,7 +139,9 @@ const mutation: IResolvers = {
         };
       }
 
+      //Read the uploaded csv file
       const { createReadStream, filename, mimetype, encoding } = await csvFile;
+      //Check the type 
       if (mimetype !== "text/csv") {
         return {
           status: false,
@@ -135,13 +149,14 @@ const mutation: IResolvers = {
           fileCompleteName: null
         };
       }
-
+      //Create a unique name for the file based on current datetime, email and the name of the uploaded file
       const fileCompleteName = `${
         info.user.email
       }_${new Datetime().getCurrentDateTime()}_${filename}`;
       const newPath = path.join(__dirname, `../`, fileCompleteName);
       const stream = createReadStream();
-
+      
+      //Pass the stream readed into another to put all the information
       if (
         !(await new Promise((resolve, reject) =>
           stream
@@ -160,6 +175,7 @@ const mutation: IResolvers = {
         };
       }
 
+      //If there were no errors then add the filename to MongoDB and return true
       return await db
         .collection("files")
         .insertOne({ name: filename })
@@ -180,12 +196,14 @@ const mutation: IResolvers = {
         });
     },
 
+    //Get the measures from a patient
     async getMeasures(_: void, { patient }, { db, token }): Promise<any> {
       return await db
         .collection("measures")
         .find({ patientId: patient })
         .toArray();
     },
+    //Log a podiatrist into a system, only podiatrist (Made for WEB APP)
     async loginPodiatrist(_: void, { email, password }, { db }): Promise<any> {
       const user = await db.collection("users").findOne({ email });
       if (user === null) {
@@ -195,7 +213,7 @@ const mutation: IResolvers = {
           token: null
         };
       }
-
+      //Compare the hash
       if (!bcryptjs.compareSync(password, user.password)) {
         return {
           status: false,
@@ -211,6 +229,7 @@ const mutation: IResolvers = {
         };
       }
       delete user.password;
+      //Return the token an the info without the password
       return {
         status: true,
         message: "Correct token.",
@@ -218,6 +237,7 @@ const mutation: IResolvers = {
         user: user
       };
     },
+    //Add a group of patients to a podiatrist
     async addPatientsArray(
       _: void,
       { podiatrist, patients },
@@ -232,7 +252,7 @@ const mutation: IResolvers = {
       }
 
       var updated = 0;
-
+      //For each patientID search it and add the current podiatrist
       patients.forEach(async (patient: any) => {
         const alonePatient = await db
           .collection("users")
@@ -255,10 +275,13 @@ const mutation: IResolvers = {
         updatedPatients: updated
       };
     },
+    //Modify the information on a user
     async updateUser(_: void, { user, change }, { db, token }): Promise<any> {
+      //If we want to change the password we need to hash it
       if (change.password) {
         change.password = bcryptjs.hashSync(change.password, 10);
       }
+      //Check the token
       let info: any = new JWT().verify(token);
       if (info === "Invalid token. Log in again.") {
         return {
@@ -267,6 +290,7 @@ const mutation: IResolvers = {
         };
       }
 
+      //Get the user and change all the info that we desired
       const userModified = await db
         .collection("users")
         .updateOne({ id: parseInt(user) }, { $set: change });

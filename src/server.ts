@@ -9,13 +9,14 @@ import Database from './config/database';
 import expressPlayground from 'graphql-playground-middleware-express';
 import { graphqlUploadExpress } from 'graphql-upload'
 
-
+// Run the server as production
 if (process.env.NODE_ENV !== 'production') {
     const envs = environments;
     // console.log(envs);
 }
-
+//Initiate the server
 async function init() {
+    //Permit upload files on the server
     const app = express().use(
         graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 })
     );
@@ -23,10 +24,12 @@ async function init() {
     app.use('*', cors());
 
     app.use(compression());
-
+    
+    //Create instance of DB
     const database = new Database();
     const db = await database.init();
-
+    
+    //Get the context, obatin the token to Authorize access
     const context: any = async({req,connection}: any) => {
         const token = req ? req.headers.authorization : connection.authorization;
         return { db, token };

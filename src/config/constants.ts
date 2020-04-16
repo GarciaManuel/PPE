@@ -1,5 +1,5 @@
 import environments from './environments';
-
+//Get all constants form the env file into the code
 if (process.env.NODE_ENV !== 'production') {
     const environment = environments;
 }
